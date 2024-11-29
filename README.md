@@ -1,3 +1,3 @@
 Sven
 
-A kitchen assistant build with AI
+An AI kitchen assistant build with Electron.
