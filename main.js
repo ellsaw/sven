@@ -20,8 +20,8 @@ const currentThread = async () => {
 async function toAssistant(input) {
   try {
     const threadId = globalThreadId;
-    const reply = await assistant(input, threadId);
-    console.log(reply);
+    const replyBuffer = await assistant(input, threadId)
+    return replyBuffer;
   } catch (error) {
     console.error("Error getting reply:", error);
   }
@@ -52,6 +52,13 @@ const createWindow = () => {
 
 app.whenReady().then(() => {
   initializeApp();
+
+  ipcMain.handle('input', async (event, data) => {
+    const replyBuffer = await toAssistant(data)
+    console.log("Sending speech to front-end.")
+    return replyBuffer;
+  });
+
   createWindow();
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
@@ -66,5 +73,6 @@ app.on("window-all-closed", () => {
 
 
 ipcMain.on('input', (event, data) => {
+  console.log(`Recieved input ${data}`)
   toAssistant(data);
 })

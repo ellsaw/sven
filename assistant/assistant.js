@@ -1,4 +1,5 @@
 require("dotenv").config();
+const textToSpeech = require('./speech')
 const { OpenAI } = require("openai");
 const assistant_id = process.env.ASSISTANT_ID;
 
@@ -6,14 +7,11 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-console.log(assistant_id)
-
 async function reply(threadId) {
   const messages = await openai.beta.threads.messages.list(threadId)
   return messages.data[0].content[0].text.value;
-  /* const assistantMessage = messages.data.filter(message => message.role === "assistant")
-  return assistantMessage[0].content[0].text.value */
 }
+
 async function main(userInput, threadId) {
   try {
     console.log("Adding user message...");
@@ -28,7 +26,17 @@ async function main(userInput, threadId) {
     });
 
     console.log("Assistant replying...")
-    return await reply(threadId)
+    const response = await reply(threadId)
+    console.log(`Assistant replied with: ${response}`)
+
+    console.log("Getting speech...")
+    try{
+      const speech = await textToSpeech(response);
+      console.log("Sending speech to main...")
+      return speech;
+    }catch(error){
+      console.error("Could not process speech.")
+    }
 
   } catch (error) {
     console.error("Error:", error);
