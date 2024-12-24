@@ -5,7 +5,6 @@ const { Readable } = require("stream");
 const assistant = require("./assistant/assistant.js");
 const thread = require("./assistant/thread.js");
 const speechToText = require('./utils/speechToText.js');
-const dns = require('dns');
 
 let globalThreadId = null;
 
@@ -29,16 +28,9 @@ async function toAssistant(input) {
   }
 }
 
-const initializeApp = async () => {
-  try{
-    globalThreadId = await currentThread();
-  }catch(error){
-    console.error("Error initializing")
-  }
-}
 
 const createWindow = () => {
-  const win = new BrowserWindow({
+  const window = new BrowserWindow({
     width: 1024,
     height: 600,
     webPreferences: {
@@ -50,42 +42,31 @@ const createWindow = () => {
   });
 
 
-  win.loadFile("index.html");
+  window.loadFile("index.html");
+
+  return window;
 };
 
-async function checkIfOnline() {
-  try {
-    await dns.resolve('google.com');
-    return true;
-  } catch (error) {
-    return false;
+const initializeApp = async (window) => {
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  };
+
+  while(true){
+  try{
+    globalThreadId = await currentThread();
+
+    window.webContents.send('initialized');
+
+    return;
+  }catch(error){
+    console.error("Error initializing:", error)
+    await sleep(3000);
   }
+}
 }
 
 app.whenReady().then(async () => {
-
-  async function isOnline(){
-    if(!await checkIfOnline()){
-      console.log("Offline")
-
-      const interval = setInterval(async () => {
-        console.log('Checking connection...')
-
-        if(await checkIfOnline()){
-          console.log('Connection Established')
-          clearInterval(interval);
-        }
-        console.log('Offline')
-      }, 1000)
-    }else{
-      console.log('Connection Established')
-      return;
-    }
-  }
-
-  await isOnline();
-
-  initializeApp();
 
   ipcMain.handle('askSven', async (event, data) => {
     try{
@@ -103,9 +84,10 @@ app.whenReady().then(async () => {
     }
   });
 
+  const window = createWindow();
 
+  initializeApp(window);
 
-  createWindow();
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createWindow();
@@ -116,9 +98,3 @@ app.whenReady().then(async () => {
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
 });
-
-
-ipcMain.on('input', (event, data) => {
-  console.log(`Recieved input ${data}`)
-  toAssistant(data);
-})

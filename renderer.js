@@ -4,30 +4,12 @@ const loadingContainer = document.getElementById('loadingcontainer');
 const speakButton = document.getElementById("speakButton");
 const stopSpeechButton = document.getElementById("stopSpeechButton");
 
-
-function checkIfOnLine () {
-  if(!navigator.onLine){
-
-    loadingContainer.classList.remove('hidden');
-    speakButton.classList.add('hidden');
-    stopSpeechButton.classList.add('hidden');
-  
-  
-  setInterval(() => {
-    if(navigator.onLine){
-      loadingContainer.classList.add('hidden');
-      speakButton.classList.remove('hidden');
-      stopSpeechButton.classList.remove('hidden');
-      return;
-    }
-  }, 1000);
-  
-  }else{
-    return;
-  }
-};
-
-checkIfOnLine();
+window.electronAPI.onInitialized(() => {
+  console.log('called')
+  loadingContainer.classList.add('hidden');
+  speakButton.classList.remove('hidden');
+  stopSpeechButton.classList.remove('hidden');
+});
 
 function bufferToLink(buffer) {
   const blob = new Blob([buffer], { type: "audio/mp3" });
