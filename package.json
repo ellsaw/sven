@@ -15,8 +15,10 @@
     "nodemon": "^3.1.7"
   },
   "dependencies": {
+    "@google-cloud/speech": "^6.7.0",
     "axios": "^1.7.7",
     "dotenv": "^16.4.5",
+    "node-record-lpcm16": "^1.0.1",
     "openai": "^4.70.2"
   }
 }

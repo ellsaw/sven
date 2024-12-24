@@ -1,6 +1,40 @@
-Sven
+# Sven
 
-An AI kitchen assistant build with Electron.
+An AI assistant build with Electron.
 
-2024-12-01:
-Sven now works, added simple form to input text data. Text data gets asked to Sven, Svens reply is sent through a text to speech module that returns a buffer. That buffer is then turned into audio in the renderer.
+
+## Features
+
+* Input text data and get a chatGPT reply
+
+
+## Planned Features
+
+* Speech input
+
+* "Hej Sven" activation 
+
+* Function execution
+
+* Animated avatar, whos mouth moves with speech
+
+
+## Tech Stack
+
+### Front-end
+
+* HTML
+
+* CSS
+
+* JavaScript
+
+
+### Back-end
+
+* Node.JS
+
+* Electron
+
+
+

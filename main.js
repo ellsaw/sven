@@ -4,6 +4,7 @@ const path = require("node:path");
 const { Readable } = require("stream");
 const assistant = require("./assistant/assistant.js");
 const thread = require("./assistant/thread.js");
+const speechToText = require('./utils/speechToText.js');
 
 let globalThreadId = null;
 
@@ -41,6 +42,7 @@ const createWindow = () => {
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
+      nodeIntegration: false,
       contextIsolation: true,
       enableRemoteModule: false,
     },
@@ -53,11 +55,23 @@ const createWindow = () => {
 app.whenReady().then(() => {
   initializeApp();
 
-  ipcMain.handle('input', async (event, data) => {
-    const replyBuffer = await toAssistant(data)
-    console.log("Sending speech to front-end.")
-    return replyBuffer;
+  ipcMain.handle('askSven', async (event, data) => {
+    try{
+      console.log('Speech recieved on back-end');
+
+      const transcription = await speechToText(data);
+
+      console.log('Sending transcription to assistant');
+
+      const replyBuffer = await toAssistant(transcription);
+
+      return replyBuffer;
+    }catch(error){
+      return error;
+    }
   });
+
+
 
   createWindow();
   app.on("activate", () => {
