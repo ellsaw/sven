@@ -1,5 +1,34 @@
 "use strict";
 
+const loadingContainer = document.getElementById('loadingcontainer');
+const speakButton = document.getElementById("speakButton");
+const stopSpeechButton = document.getElementById("stopSpeechButton");
+
+
+function checkIfOnLine () {
+  if(!navigator.onLine){
+
+    loadingContainer.classList.remove('hidden');
+    speakButton.classList.add('hidden');
+    stopSpeechButton.classList.add('hidden');
+  
+  
+  setInterval(() => {
+    if(navigator.onLine){
+      loadingContainer.classList.add('hidden');
+      speakButton.classList.remove('hidden');
+      stopSpeechButton.classList.remove('hidden');
+      return;
+    }
+  }, 1000);
+  
+  }else{
+    return;
+  }
+};
+
+checkIfOnLine();
+
 function bufferToLink(buffer) {
   const blob = new Blob([buffer], { type: "audio/mp3" });
   return URL.createObjectURL(blob);
@@ -13,8 +42,6 @@ function playReply(buffer) {
   audio.onended = () => URL.revokeObjectURL(audioLink);
 }
 
-const speakButton = document.getElementById("speakButton");
-
 speakButton.addEventListener("click", async () => {
   try {
 
@@ -26,8 +53,6 @@ speakButton.addEventListener("click", async () => {
 
     console.log(mediaRecorder.state);
     console.log("Recorder started");
-
-    const stopSpeechButton = document.getElementById("stopSpeechButton");
 
     stopSpeechButton.addEventListener("click", () => {
       mediaRecorder.stop();

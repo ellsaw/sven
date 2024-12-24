@@ -6,3 +6,28 @@
 #speakButton{
     cursor: pointer;
 }
+
+.loadingcontainer{
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.loadingcontainer img{
+  width: 200px;
+  height: auto;
+  animation: loading 2s infinite;
+}
+
+.hidden{
+  display: none;
+}
+
+@keyframes loading {
+  0% {rotate: 0;}
+  50% {rotate: 180deg}
+  100% {rotate: 360deg;}
+}

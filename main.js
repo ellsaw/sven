@@ -5,6 +5,7 @@ const { Readable } = require("stream");
 const assistant = require("./assistant/assistant.js");
 const thread = require("./assistant/thread.js");
 const speechToText = require('./utils/speechToText.js');
+const dns = require('dns');
 
 let globalThreadId = null;
 
@@ -52,7 +53,38 @@ const createWindow = () => {
   win.loadFile("index.html");
 };
 
-app.whenReady().then(() => {
+async function checkIfOnline() {
+  try {
+    await dns.resolve('google.com');
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+app.whenReady().then(async () => {
+
+  async function isOnline(){
+    if(!await checkIfOnline()){
+      console.log("Offline")
+
+      const interval = setInterval(async () => {
+        console.log('Checking connection...')
+
+        if(await checkIfOnline()){
+          console.log('Connection Established')
+          clearInterval(interval);
+        }
+        console.log('Offline')
+      }, 1000)
+    }else{
+      console.log('Connection Established')
+      return;
+    }
+  }
+
+  await isOnline();
+
   initializeApp();
 
   ipcMain.handle('askSven', async (event, data) => {
