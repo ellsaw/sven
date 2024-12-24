@@ -32,8 +32,6 @@ module.exports = async (blob) => {
 
     const [response] = await client.recognize(request);
 
-    console.log('API Response:', JSON.stringify(response)); 
-
     const transcription = response.results
       .map(result => result.alternatives[0].transcript)
       .join('\n');
