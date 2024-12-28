@@ -74,11 +74,17 @@ app.whenReady().then(async () => {
 
       const transcription = await speechToText(data);
 
-      console.log('Sending transcription to assistant');
+      if(transcription){
+        console.log('Sending transcription to assistant');
+  
+        const replyBuffer = await toAssistant(transcription);
 
-      const replyBuffer = await toAssistant(transcription);
+        return replyBuffer;
+      }else{
+        console.log('No input detected.')
 
-      return replyBuffer;
+        return null;
+      }
     }catch(error){
       return error;
     }
